@@ -33,11 +33,16 @@ static size_t ilog2_2(size_t i)
     return result;
 }
 
+int ilog32(uint32_t v)
+{
+    return (31 - __builtin_clz(v));
+}
+
 int main()
 {
-	size_t n = 1024;
+	size_t n = 0x10000000;
 
-	printf("%d, %ld\n", ilog2(n), ilog2_2(n));
+	printf("%d, %ld, %d\n", ilog2(n), ilog2_2(n), ilog32(n));
 
 	return 0;
 }
