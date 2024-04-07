@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <strings.h>
 
 int ilog2(int i)
 {
@@ -15,19 +16,19 @@ int ilog2(int i)
 static size_t ilog2_2(size_t i)
 {
     size_t result = 0;
-    while (i >= 0xffff) {
+    while (i >= 0x10000) {
         result += 16;
         i >>= 16;
     }
-    while (i >= 0xff) {
+    while (i >= 0x100) {
         result += 8;
         i >>= 8;
     }
-    while (i >= 0xf) {
+    while (i >= 0x10) {
         result += 4;
         i >>= 4;
     }
-    while (i >= 2) {
+    while (i >= 0x2) {
         result += 1;
         i >>= 1;
     }
@@ -36,8 +37,39 @@ static size_t ilog2_2(size_t i)
 
 int ilog32(uint32_t v)
 {
-    printf("[%s]: %d\n", __func__, __builtin_clz(v));
     return (31 - __builtin_clz(v | 1));
+}
+
+int __ilog2_u32(uint32_t n)
+{
+	return fls(n) - 1;
+}
+
+int ceil_ilog2(uint32_t x)
+{
+    uint32_t r, shift;
+
+    //x--;
+    r = (x > 0xFFFF) << 4;
+    x >>= r;
+    printf("[0xFFFF] x: 0x%x\n", x);
+
+    shift = (x > 0xFF) << 3;
+    x >>= shift;
+    r |= shift;
+    printf("[0xFF] x: 0x%x\n", x);
+
+    shift = (x > 0xF) << 2;
+    x >>= shift;
+    r |= shift;
+    printf("[0xF] x: 0x%x\n", x);
+
+    shift = (x > 0x3) << 1;
+    x >>= shift;
+    printf("[0x3] x: 0x%x\n", x);
+
+    return (r | shift | x > 1) + 1;
+
 }
 
 static inline int is_power_of_2(unsigned long n)
@@ -113,9 +145,19 @@ unsigned long ewma_read(const struct ewma *avg)
 
 int main()
 {
-	size_t n = 6;
+	//size_t n = 0x0f456780;
+    size_t n = 0x10000000;
 
-	printf("%d, %ld, %d\n", ilog2(n), ilog2_2(n), ilog32(n));
+	//for (int i = 1; i < 0xffffffff; i++) {
+    //    if (ilog32(i) != ceil_ilog2(i)){
+    //        printf("Test[%d]: %d, %ld, %d, %d\n", i, ilog2(i), ilog2_2(i), ilog32(i), ceil_ilog2(i));
+    //        break;
+    //    } else
+    //        printf("Test[%d]: pass\n", i);
+    //}
+
+    //printf("Test[0x%zx]: %d, %d\n", n, ceil_ilog2(n), __ilog2_u32(n));
+    printf("Test[%zu]: %d, %ld, %d, %d, %d\n", n, ilog2(n), ilog2_2(n), ilog32(n), ceil_ilog2(n), __ilog2_u32(n));
 
 	return 0;
 }
