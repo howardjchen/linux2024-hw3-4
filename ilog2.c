@@ -37,7 +37,7 @@ static size_t ilog2_2(size_t i)
 int ilog32(uint32_t v)
 {
     printf("[%s]: %d\n", __func__, __builtin_clz(v));
-    return (31 - __builtin_clz(v));
+    return (31 - __builtin_clz(v | 1));
 }
 
 static inline int is_power_of_2(unsigned long n)
