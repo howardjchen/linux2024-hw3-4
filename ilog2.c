@@ -61,7 +61,6 @@ int ceil_ilog2(uint32_t x)
 {
     uint32_t r, shift;
 
-    x--;
     r = (x > 0xFFFF) << 4;
     x >>= r;
    // printf("[0xFFFF] x: 0x%x\n", x);
@@ -80,7 +79,7 @@ int ceil_ilog2(uint32_t x)
     x >>= shift;
     //printf("[0x3] x: 0x%x\n", x);
 
-    return (r | shift | x > 1) + 1;
+    return (r | shift | x > 1);
 
 }
 
