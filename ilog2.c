@@ -2,6 +2,18 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <strings.h>
+#include <stdint.h>
+
+int fls(int mask)
+{
+	int bit;
+
+	if (mask == 0)
+		return (0);
+	for (bit = 1; mask != 1; bit++)
+		mask = (unsigned int)mask >> 1;
+	return (bit);
+}
 
 int ilog2(int i)
 {
@@ -49,24 +61,24 @@ int ceil_ilog2(uint32_t x)
 {
     uint32_t r, shift;
 
-    //x--;
+    x--;
     r = (x > 0xFFFF) << 4;
     x >>= r;
-    printf("[0xFFFF] x: 0x%x\n", x);
+   // printf("[0xFFFF] x: 0x%x\n", x);
 
     shift = (x > 0xFF) << 3;
     x >>= shift;
     r |= shift;
-    printf("[0xFF] x: 0x%x\n", x);
+    //printf("[0xFF] x: 0x%x\n", x);
 
     shift = (x > 0xF) << 2;
     x >>= shift;
     r |= shift;
-    printf("[0xF] x: 0x%x\n", x);
+    //printf("[0xF] x: 0x%x\n", x);
 
     shift = (x > 0x3) << 1;
     x >>= shift;
-    printf("[0x3] x: 0x%x\n", x);
+    //printf("[0x3] x: 0x%x\n", x);
 
     return (r | shift | x > 1) + 1;
 
@@ -148,16 +160,16 @@ int main()
 	//size_t n = 0x0f456780;
     size_t n = 0x10000000;
 
-	//for (int i = 1; i < 0xffffffff; i++) {
-    //    if (ilog32(i) != ceil_ilog2(i)){
-    //        printf("Test[%d]: %d, %ld, %d, %d\n", i, ilog2(i), ilog2_2(i), ilog32(i), ceil_ilog2(i));
-    //        break;
-    //    } else
-    //        printf("Test[%d]: pass\n", i);
-    //}
+	for (int i = 1; i < 0xffffffff; i++) {
+        if (ilog32(i) != ceil_ilog2(i)){
+            printf("Test[%d]: %d, %ld, %d, %d\n", i, ilog2(i), ilog2_2(i), ilog32(i), ceil_ilog2(i));
+            break;
+        } else
+            printf("Test[%d]: pass\n", i);
+    }
 
     //printf("Test[0x%zx]: %d, %d\n", n, ceil_ilog2(n), __ilog2_u32(n));
-    printf("Test[%zu]: %d, %ld, %d, %d, %d\n", n, ilog2(n), ilog2_2(n), ilog32(n), ceil_ilog2(n), __ilog2_u32(n));
+    //printf("Test[%zu]: %d, %ld, %d, %d, %d\n", n, ilog2(n), ilog2_2(n), ilog32(n), ceil_ilog2(n), __ilog2_u32(n));
 
 	return 0;
 }
