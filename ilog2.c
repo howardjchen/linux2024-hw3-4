@@ -163,6 +163,32 @@ int totalHammingDistance(int* nums, int numsSize)
     return total >> 1;
 }
 
+void store_bits(unsigned int a, int *bit_array)
+{
+    if (a == 0) return;
+    for (int i = 0; i < 32; i++) {
+        bit_array[i] += a & 0x1;
+        a = a >> 1;
+    }
+}
+
+int totalHammingDistance_enhance(int* nums, int numsSize)
+{
+    int bit_array[32] = {0};
+    int total = 0;
+
+    for (int i = 0; i < numsSize; i++)
+        store_bits(nums[i], bit_array);
+
+    for (int i = 0; i < 32; i++) {
+        if (bit_array[i] != 0) {
+            total += bit_array[i] * (numsSize - bit_array[i]);
+        }
+    }
+
+    return total;
+}
+
 int main()
 {
 	//size_t n = 0x0f456780;
@@ -181,6 +207,7 @@ int main()
 
     int num[3] = {4, 14, 2};
     printf("hamming dis: %d\n", totalHammingDistance(num, 3));
+    printf("hamming dis enhance: %d\n", totalHammingDistance_enhance(num, 3));
 
 	return 0;
 }
