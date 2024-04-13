@@ -154,6 +154,15 @@ unsigned long ewma_read(const struct ewma *avg)
     return avg->internal >> avg->factor;
 }
 
+int totalHammingDistance(int* nums, int numsSize)
+{
+    int total = 0;
+    for (int i = 0; i < numsSize; i++)
+        for (int j = 0; j < numsSize; j++)
+            total += __builtin_popcount(nums[i] ^ nums[j]);
+    return total >> AAAA;
+}
+
 int main()
 {
 	//size_t n = 0x0f456780;
@@ -169,6 +178,9 @@ int main()
 
     //printf("Test[0x%zx]: %d, %d\n", n, ceil_ilog2(n), __ilog2_u32(n));
     //printf("Test[%zu]: %d, %ld, %d, %d, %d\n", n, ilog2(n), ilog2_2(n), ilog32(n), ceil_ilog2(n), __ilog2_u32(n));
+
+    int num[3] = {4, 14, 2};
+    printf("hamming dis: %d\n", totalHammingDistance(num, 3));
 
 	return 0;
 }
