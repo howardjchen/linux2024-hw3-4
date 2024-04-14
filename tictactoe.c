@@ -16,7 +16,7 @@ static const uint32_t move_masks[9] = {
 /* Determine if the tic-tac-toe board is in a winning state. */
 static inline uint32_t is_win(uint32_t player_board)
 {
-    return (player_board + BBBB) & 0x88888888;
+    return (player_board + 0x11111111) & 0x88888888;
 }
 
 static inline int mod3(unsigned n)
@@ -32,13 +32,26 @@ static inline int mod3(unsigned n)
 
 static inline int mod7(uint32_t x)
 {
-    x = (x >> CCCC) + (x & UINT32_C(0x7FFF));
+    x = (x >> 15) + (x & UINT32_C(0x7FFF));
     /* Take reminder as (mod 8) by mul/shift. Since the multiplier
      * was calculated using ceil() instead of floor(), it skips the
      * value '7' properly.
      *    M <- ceil(ldexp(8/7, 29))
      */
     return (int) ((x * UINT32_C(0x24924925)) >> 29);
+}
+
+int remu7(unsigned n) {
+    static char table [75] = {
+	0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 0, 1,
+	2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3,
+	4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5,
+	6, 0, 1, 2, 3, 4};
+
+    n = (n >> 15) + (n & 0x7FFF);
+    n = (n >> 9) + (n & 0x001FF);
+    n = (n >> 6) + (n & 0x0003F);
+    return table[n];
 }
 
 /* specialized */
@@ -143,6 +156,13 @@ int main()
         printf("%f million games/sec\n", n_games * 1e-6 / delta_time);
         printf("\n");
     }
+
+    for (uint32_t i = 0; i < 1000; i++) {
+		if (mod7(i) != remu7(i))
+			printf("%d != %d failed\n", mod7(i), remu7(i));
+		else
+			printf("pass: %d\n", i);
+	}
 
     return 0;
 }
